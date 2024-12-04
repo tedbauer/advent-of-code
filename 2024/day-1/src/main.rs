@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::io;
 use std::io::BufRead;
 
-fn solution2(input: &[String]) -> Result<String> {
+fn solve_part_two(input: &[String]) -> Result<String> {
     let (left, right) = build_left_right(input)?;
 
     // right_count_map[num] = how many times num appears in right.
@@ -40,7 +40,7 @@ fn solution2(input: &[String]) -> Result<String> {
     Ok(similarity.to_string())
 }
 
-fn solution1(input: &[String]) -> Result<String> {
+fn solve_part_one(input: &[String]) -> Result<String> {
     let (mut left, mut right) = build_left_right(input)?;
 
     left.sort();
@@ -79,6 +79,6 @@ fn main() {
     let input = io::stdin().lock().lines();
     let lines: Vec<String> = input.collect::<Result<Vec<String>, _>>().unwrap();
 
-    println!("{}", solution1(&lines).unwrap());
-    println!("{}", solution2(&lines).unwrap());
+    println!("{}", solve_part_one(&lines).unwrap());
+    println!("{}", solve_part_two(&lines).unwrap());
 }

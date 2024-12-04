@@ -1,4 +1,4 @@
-# [Advent of Code](https://adventofcode.com/) solutions
+# [Advent of Code](https://adventofcode.com/) Solutions
 
 ```
 cd <year>/day-<N>
