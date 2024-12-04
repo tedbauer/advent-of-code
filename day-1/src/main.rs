@@ -2,8 +2,6 @@ use anyhow::{anyhow, Result};
 use std::collections::HashMap;
 use std::io;
 use std::io::BufRead;
-use std::io::Lines;
-use std::io::StdinLock;
 
 fn solution2(input: &[String]) -> Result<String> {
     let (left, right) = build_left_right(input)?;
@@ -28,7 +26,7 @@ fn solution2(input: &[String]) -> Result<String> {
     }
 
     let mut similarity = 0;
-    for (num, count) in left_count_map.clone().into_iter() {
+    for (num, _) in left_count_map.clone().into_iter() {
         let mut sim = 0;
         if let Some(right_count) = right_count_map.get(&num) {
             sim += num * right_count;
