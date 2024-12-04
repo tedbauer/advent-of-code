@@ -1,7 +1,6 @@
 [package]
-name = "advent-of-code"
+name = "day-2"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.93"
