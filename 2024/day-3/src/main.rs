@@ -5,21 +5,75 @@ use std::io::BufRead;
 
 fn solve_part_one(input: &[String]) -> Result<String> {
     let correct_updates = compute_correct_updates(input)?;
+    Ok(sum_middle_pages(correct_updates).to_string())
+}
 
-    let mut page_sum = 0;
-    for update in correct_updates {
-        if let Some(middle_page_num) = update.get(update.len() / 2) {
-            page_sum += middle_page_num
+fn solve_part_two(input: &[String]) -> Result<String> {
+    let fixed_updates = compute_fixed_updates(input)?;
+    Ok(sum_middle_pages(fixed_updates).to_string())
+}
+
+fn compute_fixed_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
+    let must_be_before: HashMap<usize, HashSet<usize>> = compute_must_be_before(input)?;
+    let mut fixed_updates: HashSet<Vec<usize>> = HashSet::new();
+    for line in input {
+        // We just want to process the updates, so skip the first section.
+        if line.contains("|") {
+            continue;
+        } else if line.is_empty() {
+            continue;
+        }
+        else {
+            let update: Result<Vec<usize>, _> =
+                line.split(",").map(|n| n.parse::<usize>()).collect();
+            let mut update: Vec<usize> = update?;
+
+            let mut fixed = false;
+            let mut applied_fix = false;
+            while !fixed {
+                let mut discovered_invalid = false;
+                for (i, page) in update.clone().into_iter().enumerate() {
+                    if discovered_invalid {
+                        break;
+                    }
+
+                    if i == update.len() - 1 {
+                        fixed = true;
+
+                        if applied_fix {
+                            fixed_updates.insert(update.clone());
+                            applied_fix = false;
+                        }
+                        break;
+                    }
+                    
+                    for (other_i, other_page) in update[i + 1..].into_iter().enumerate() {
+                        if must_be_before
+                            .get(&other_page)
+                            .map(|before| before.contains(&page))
+                            .unwrap_or(false)
+                        {
+                            discovered_invalid = true;
+                            let other_index = other_i + i + 1;
+                            update.swap(i, other_index);
+                            applied_fix = true;
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 
-    Ok(page_sum.to_string())
+    Ok(fixed_updates)
 }
 
-fn compute_correct_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
-    let mut must_be_before: HashMap<usize, HashSet<usize>> = HashMap::new();
-    let mut correct_updates: HashSet<Vec<usize>> = HashSet::new();
+fn sum_middle_pages(updates: HashSet<Vec<usize>>) -> usize {
+    updates.into_iter().map(|update| update.get(update.len() / 2).unwrap_or(&0).clone()).sum()
+}
 
+fn compute_must_be_before(input: &[String]) -> Result<HashMap<usize, HashSet<usize>>> {
+    let mut must_be_before: HashMap<usize, HashSet<usize>> = HashMap::new();
     for line in input {
         // Populate must_be_before.
         if line.contains("|") {
@@ -40,11 +94,25 @@ fn compute_correct_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
                 .or_insert(HashSet::new())
                 .insert(right);
         }
-        // Empty line.
+        // Empty line, so stop processing.
         else if line.is_empty() {
+            break;
+        }
+    }
+    Ok(must_be_before)
+}
+
+fn compute_correct_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
+    let must_be_before = compute_must_be_before(input)?;
+    let mut correct_updates: HashSet<Vec<usize>> = HashSet::new();
+
+    for line in input {
+        // We just want to process the updates, so skip the first section.
+        if line.contains("|") {
+            continue;
+        } else if line.is_empty() {
             continue;
         }
-        // Process an entry.
         else {
             let update: Result<Vec<usize>, _> =
                 line.split(",").map(|n| n.parse::<usize>()).collect();
@@ -83,4 +151,5 @@ fn main() {
     let lines: Vec<String> = input.collect::<Result<Vec<String>, _>>().unwrap();
 
     println!("{}", solve_part_one(&lines).unwrap());
+    println!("{}", solve_part_two(&lines).unwrap());
 }
