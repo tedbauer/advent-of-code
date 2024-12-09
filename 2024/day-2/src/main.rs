@@ -1,9 +1,10 @@
+use anyhow::anyhow;
 use anyhow::Result;
 use std::io;
 use std::io::BufRead;
 
 fn solve_part_two(lines: &[String]) -> Result<u32> {
-    
+    todo!()
 }
 
 fn solve_part_one(lines: &[String]) -> Result<u32> {
@@ -29,9 +30,13 @@ fn solve_part_one(lines: &[String]) -> Result<u32> {
     Ok(safe_count)
 }
 
-fn main() {
+fn main() -> Result<()> {
     let input = io::stdin().lock().lines();
-    let lines: Vec<String> = input.collect::<Result<Vec<String>, _>>().unwrap();
+    let lines: Vec<String> = input
+        .collect::<Result<Vec<String>, _>>()
+        .map_err(|err| anyhow!("failed to parse lines: {}", err))?;
 
-    println!("{}", solve_part_one(&lines).unwrap())
+    println!("{}", solve_part_one(&lines)?);
+
+    Ok(())
 }

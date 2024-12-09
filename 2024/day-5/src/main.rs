@@ -22,8 +22,7 @@ fn compute_fixed_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
             continue;
         } else if line.is_empty() {
             continue;
-        }
-        else {
+        } else {
             let update: Result<Vec<usize>, _> =
                 line.split(",").map(|n| n.parse::<usize>()).collect();
             let mut update: Vec<usize> = update?;
@@ -46,7 +45,7 @@ fn compute_fixed_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
                         }
                         break;
                     }
-                    
+
                     for (other_i, other_page) in update[i + 1..].into_iter().enumerate() {
                         if must_be_before
                             .get(&other_page)
@@ -69,7 +68,10 @@ fn compute_fixed_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
 }
 
 fn sum_middle_pages(updates: HashSet<Vec<usize>>) -> usize {
-    updates.into_iter().map(|update| update.get(update.len() / 2).unwrap_or(&0).clone()).sum()
+    updates
+        .into_iter()
+        .map(|update| update.get(update.len() / 2).unwrap_or(&0).clone())
+        .sum()
 }
 
 fn compute_must_be_before(input: &[String]) -> Result<HashMap<usize, HashSet<usize>>> {
@@ -112,8 +114,7 @@ fn compute_correct_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
             continue;
         } else if line.is_empty() {
             continue;
-        }
-        else {
+        } else {
             let update: Result<Vec<usize>, _> =
                 line.split(",").map(|n| n.parse::<usize>()).collect();
             let update: Vec<usize> = update?;
@@ -146,10 +147,14 @@ fn compute_correct_updates(input: &[String]) -> Result<HashSet<Vec<usize>>> {
     Ok(correct_updates)
 }
 
-fn main() {
+fn main() -> Result<()> {
     let input = io::stdin().lock().lines();
-    let lines: Vec<String> = input.collect::<Result<Vec<String>, _>>().unwrap();
+    let lines: Vec<String> = input
+        .collect::<Result<Vec<String>, _>>()
+        .map_err(|err| anyhow!("failed to parse lines: {}", err))?;
 
-    println!("{}", solve_part_one(&lines).unwrap());
-    println!("{}", solve_part_two(&lines).unwrap());
+    println!("{}", solve_part_one(&lines)?);
+    println!("{}", solve_part_two(&lines)?);
+
+    Ok(())
 }

@@ -75,10 +75,14 @@ fn build_left_right(input: &[String]) -> Result<(Vec<i32>, Vec<i32>)> {
     Ok((left, right))
 }
 
-fn main() {
+fn main() -> Result<()> {
     let input = io::stdin().lock().lines();
-    let lines: Vec<String> = input.collect::<Result<Vec<String>, _>>().unwrap();
+    let lines: Vec<String> = input
+        .collect::<Result<Vec<String>, _>>()
+        .map_err(|err| anyhow!("failed to parse lines: {}", err))?;
 
-    println!("{}", solve_part_one(&lines).unwrap());
-    println!("{}", solve_part_two(&lines).unwrap());
+    println!("{}", solve_part_one(&lines)?);
+    println!("{}", solve_part_two(&lines)?);
+
+    Ok(())
 }
