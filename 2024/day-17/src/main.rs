@@ -208,7 +208,8 @@ fn parse_input() -> Result<(Vec<Instruction>, State)> {
         .split(":")
         .nth(1)
         .ok_or(anyhow!("nothing for program after :"))?
-        .trim().to_string();
+        .trim()
+        .to_string();
 
     let program = parse(&program_text)?;
     let state = State {
